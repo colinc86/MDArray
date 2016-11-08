@@ -1,170 +1,112 @@
-# `MDArray`
-## A multidimensional array type for Swift.
+![MDArray](https://github.com/colinc86/MDArray/blob/master/Web%20Assets/Title.png?raw=true)
 -------------------------------------------
 
-`MDArray` was created to manage higher order arrays in Swift. You can use it to represent vectors, matrices, and other higher order objects. Its math functions use the `Accelerate` framework and support the `Int32`, `Float`, `Double`, `DSPSplitComplex`, and `DSPDoubleSplitComplex` types. It also conforms to the `Sequence` protocol.
+`MDArray` was created to manage multidimensional arrays in Swift. You can use it to represent vectors, matrices, and other higher order objects. Its computational functions use the `Accelerate` framework and support the `Int32`, `Float`, and `Double` types.
 
 ### Why use it?
-The main objective of `MDArray` is to provide a way to work with higher order arrays in Swift. It attempts to be robust, well documented, and as fast as possible.
+The main objective of `MDArray` is to provide a way to work with higher order arrays in Swift. Applications include machine learning, signal processing, physics, and just good ol' mathematics.
 
-### To-Do
-- Multidimensional array determinant
-- Multidimensional array inverse
-- Optimize `MDArray` transpose, symmetric, and asymmetric instance functions.
+### Adding it to your project
+The `MDArray` type and associated functions are broken up in to separate files. Depending on how you'll be using `MDArray`, you may only need one or two of them. Clone the repository using your terminal of choice and add the appropriate files to your project.
+```
+https://github.com/colinc86/MDArray.git
+```
+
+`MDArray.swift` **(required)** contains the main `MDArray` type declaration. If you only need `MDArray`'s storage handling and organization, then you can get away with only including this file in your project.
+
+`MDExtensions.swift` **(optional)** adds computational functions to the `MDArray` type such as calculating determinants and determining symmetry.
+
+`MDMath.swift` **(optional)** contains binary/unary operators and is the file responsible for utilizing the `Accelerate` framework to accomplish mathematical computations between `MDArray`s.
 
 ## MDArray
 ----------
+`MDArray` has two primary properties; an array of integers, `shape`, and an array of elements ,`storage`, that are of the `MDArray`'s associated type. `shape` dictates the number of elements in `storage` and the order of `storage`'s elements.
 ### Creating a `MDArray`
-
 The default `MDArray` constructor creates an empty multidimensional array. I.e. a multidimensional array with empty storage and shape.
-
+```swift
+let A = MDArray<String>()
 ```
-let A = MDArray<Float>()
+Each `MDArray` has a `shape` property that can either be set on initialization, or at a later point in time. The following creates a multidimensional array with shape `(1, 3, 2, 1)`. Ie. a 4-Dimensional array with dimensions `1`, `3`, `2` and `1`, and `1 * 3 * 2 * 1 = 6` elements with value `""`.
+```swift
+let B = MDArray<String>(shape: [1, 3, 2, 1], repeating: "")
 ```
-
-`MDArray` supports the storage types `Int32`, `Float`, `Double`, `DSPSplitComplex`, and `DSPDoubleSplitComplex` by default. To initialize a `MDArray` with an alternate storage type, use the `init(shape: Array<Int>, defaultValue: T)` constructor to specify the default value the `MDArray` should use when reshaping.
-
+It is also possible to initialize a `MDArray` by passing an array of storage values,
+```swift
+let C = MDArray<String>(shape: [1, 3, 2, 1], storage: ["A", "type", "multidimensional", "for", "array", "Swift"])
 ```
-let B = MDArray<String>(defaultValue: "")
-```
-
-Each `MDArray` has a `shape` property that can either be set on initialization or at a later point in time. The following creates a multidimensional array with shape `(4, 4, 2)`. Ie. a 3-Dimensional array with dimensions `4`, `4`, and `2`.
-
-```
-let C = MDArray<Float>(4, 4, 2)
-```
-It is also possible to initialize a `MDArray` by passing `shape` and `defaultValue` values,
-
-```
-let D = MDArray<String>(shape: [4, 4, 2], defaultValue: "")
-```
-
-or by providing `shape` and `storage` values.
-
-```
-let E = MDArray<Float>(shape: D.shape, storage: C.storage)
-var F = MDArray<Float>(E)
-```
-- note:
-*The constructor `MDArray<T>(shape: Array<Int>, storage: Array<T>)` generally requires that `shape` be equal to the shape of the multidimensional array who owns `storage`. For example, the shape of `C` and `D` are both `(4, 4, 2)`.*
+**Note:** *The constructor `MDArray<T>(shape: Array<Int>, storage: Array<T>)` generally requires that `shape` be equal to the shape of the multidimensional array who owns `storage`.*
 
 ### Getting/Setting Elements
 
-`MDArray` supports subscripting:
+`MDArray` conforms to the `MutableCollection` protocol, and therefor supports subscripting.
 
-```
-F[0, 0, 0] = 2.0
-F[3, 3, 1] = F[0, 0, 0]
-```
-
-Or use the functions `elementAtIndices(_:)` and `setElement(_::)`:
-
-```
-let element = F.elementAtIndices([0, 0, 0])
-F.setElement(element, atIndices: [0, 1, 0])
+To get or set an element of a multidimensional array:
+```swift
+var D = MDArray<Float>(shape: [2, 3, 2], repeating: 0.0)
+D[1, 1, 0] = 2.0
+D[0, 2, 1] = F[1, 1, 0]
 ```
 
-It is generally not necessary to manipulate the multidimensional array's `storage` property directly, but if you need to do so then use the helper functions `storageIndex(:)` and `indices(:)`.
+Getting a row, column, or any sub-multidimensional array is just as easy:
+```swift
+// Get the column that spans the elements from [0, 0, 0] to [1, 0, 0]
+let columnRange = Range<Array<Int>>(uncheckedBounds: ([0, 0, 0], [1, 0, 0]))
+let column = D[columnRange]
 
-```
-// Setting an element in storage for given indices
-let index = F.storageIndex(forIndices: [3, 3, 1])
-F.storage[index] = 10.0
+// Get the row that spans the elements from [0, 0, 0] to [0, 2, 0]
+let rowRange = Range<Array<Int>>(uncheckedBounds: ([0, 0, 0], [0, 2, 0]))
+let row = D[rowRange]
 
-// Getting the element's indices if we know the storage index
-let indices = F.indices(forStorageIndex: 1)
+// Get the matrix that spans the elements from [0, 0, 1] to [1, 2, 1]
+let matrixRange = Range<Array<Int>>(uncheckedBounds: ([0, 0, 1], [1, 2, 1]))
+let matrix = D[matrixRange]
 ```
 
 ### Properties
+**`storage`**: *The `MDArray`'s storage.*
+`internal(set) var storage: Array<T>`
 
-The three most important properties of a `MDArray`:
+**`shape`**: *The shape of the `MDArray`.*
+`internal(set) var shape: Array<Int>`
 
+**`rank`**: *The number of elements in `shape`.*
+`public var rank: Int`
 
-- callout(`storage`):
-`public var storage: Array<T>`\
-*The `MDArray`'s storage.*
+**`isEmpty`**: *`true` if and only if `order == 0`.*
+`public var isEmpty: Bool`
 
+**`isVector`**: *`true` if and only if `order == 1`.*
+`public var isVector: Bool`
 
-- callout(`shape`):
-`public var shape: Array<Int>`\
-*The shape of the `MDArray`.*\
-It is not advised to set this property directly. Use the `reshape(_:)` function instead.
+**`isMatrix`**: *`true` if and only if `order == 2`.*
+`public var isMatrix: Bool`
 
+**`hasHigherOrderRepresentation`**: *`true` if and only if `order > 2`.*
+`public var hasHigherOrderRepresentation: Bool`
 
-- callout(`defaultValue`):
-`public var defaultValue: T?`\
-*The default value to use when adding new elements to the multidimensional array.*\
-This property is used when reshaping a multidimensional array to an array with more total elements than before the reshaping process. Set this property to provide your own default value for types other than those directly supported, or to override the default value the `MDArray` will use.
-
-
-The following read-only properties are available for determining the order and common types of multidimensional arrays:
-
-
-- callout(`order`):
-`public var order: Int`\
-*The number of elements in the `MDArray`'s `shape`.*
-
-
-- callout(`isEmpty`):
-`public var isEmpty: Bool`\
-*`true` if and only if `order == 0`.*
-
-
-- callout(`isVector`):
-`public var isVector: Bool`\
-*`true` if and only if `order == 1`.*
-
-
-- callout(`isMatrix`):
-`public var isMatrix: Bool`\
-*`true` if and only if `order == 2`.*
-
-
-- callout(`hasHigherOrderRepresentation`):
-`public var hasHigherOrderRepresentation: Bool`\
-*`true` if and only if `order > 2`.*
-
+**`isSquare`**: `true` if the dimensions of the multidimensional array's simplified shape are all equal.
 
 ### Functions
+`public mutating func reshape(_ shape: Array<Int>, repeating value: T?)`
+Reshapes the multidimensional array. If the new shape results in a smaller storage storage size, then the multidimensional array's storage is truncated. Otherwise, the value of `repeating` is used to add any new elements to `storage`.
 
-This list is not exhaustive. It includes the most notable `MDArray` functions.
+`public mutating func simplify()`
+Sets the receiver's `shape` to the shape returned from the static function `simplify(shape:)`.
 
+`public func validate(index: Array<Int>) -> Bool`
+Determines if `index` is valid for this multidimensional array.
 
-- callout( ):
-\
-`public func dimension(_ index: Int) -> Int`\
-\
-The dimension of the `n`th index of the multidimensional array's shape.
-
-
-- callout( ):
-\
-`public mutating func reshape(_ shape: Array<Int>) -> MDArray<T>`\
-\
-Reshapes the multidimensional array. If the new shape results in a smaller storage storage size, then the multidimensional array's elements are truncated. Otherwise, the value stored in `defaultValue` is used to fill any new elements added to the multidimensional array's storage.
-
-
-- callout( ):
-\
-`public func transpose(_ dx: Int, _ dy: Int) -> MDArray<T>`\
-\
+`public func transpose(_ dx: Int, _ dy: Int) -> MDArray<T>`
 Returns a transposed multidimensional array by transposing the `dx`th and `dy`th dimensions of the receiver.
 
+`public func vector() -> Array<T>?`
+Converts the multidimensional array to an array of type `T`. You can check the property `isVector` to determine if this function will return a non-nil value.
 
-- callout( ):
-\
-`public func symmetric(_ dx: Int, _ dy: Int) -> Bool`\
-\
-Returns a boolean indicating wether or not the multidimensional matrix is symmetric in respect to the `dx`th and `dy`th dimensions.\
-*Note: This function is only available for `MDArray`s with storage types that conform to the `Equatable` protocol.*
+`public func matrix() -> Array<Array<T>>?`
+Converts the multidimensional array to a single nested array of type `T`. You can check the property `isMatix` to determine if this function will return a non-nil value.
 
-
-- callout( ):
-\
-`public func antisymmetric(_ dx: Int, _ dy: Int) -> Bool`\
-\
-Returns a boolean indicating wether or not the multidimensional matrix is antisymmetric in respect to the `dx`th and `dy`th dimensions.\
-*Note: This function is only available for `MDArray`s with storage types that conform to the `SignedNumber` protocol.*
+`public func multiArray() -> Array<Any>?`
+Converts the multidimensional array with rank greater than 2 to a nested array of type `T`. You can check the property `hasHigherOrderRepresentation` to determine if this function will return a non-nil value.
 
 
 ## MDMath

@@ -29,10 +29,10 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
     // MARK: Properties
     
     /// The multidimensional array's storage.
-    public var storage: Array<T>
+    internal(set) var storage: Array<T>
     
     /// The shape of the multidimensional array.
-    public var shape: Array<Int>
+    internal(set) var shape: Array<Int>
     
     
     
@@ -171,35 +171,6 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
     
     
     // MARK: Public functions
-    
-    /**
-     The dimension of the `n`th index of the multidimensional array's shape.
-     
-     For example, using a multidimensional array `A` with shape `[2, 3, 1]`
-     ```
-     print(A.dimension(0))
-     print(A.dimension(1))
-     print(A.dimension(2))
-     ```
-     produces the output:
-     ```
-     2
-     3
-     1
-     ```
-     
-     - Parameter index: The index of the dimension in the multidimensional array's shape.
-     - Returns: The dimension's value.
-     */
-    public func dimension(_ index: Int) -> Int {
-        var c = 0
-        
-        if (0 <= index) && (index <= self.shape.count) {
-            c = self.shape[index]
-        }
-        
-        return c
-    }
     
     /**
      Reshapes the multidimensional array.
