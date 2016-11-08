@@ -26,12 +26,12 @@ There is still work to be done! Please feel free to contribute to any of the fol
 - Multidimensional array inverse, cross product, and dot product.
 
 ## MDArray
-### Creating a `MDArray`
+### Creating a MDArray
 The default `MDArray` constructor creates an empty multidimensional array. I.e. a multidimensional array with empty storage and shape.
 ```swift
 let A = MDArray<String>()
 ```
-Each `MDArray` has a `shape` property that can either be set on initialization, or at a later point in time. The following creates a multidimensional array with shape `(1, 3, 2, 1)` and repeating value `""`. Ie. a 4-Dimensional array with dimensions `1`, `3`, `2` and `1`, and `1 * 3 * 2 * 1 = 6` elements with value `""`.
+Each multidimensional array has a `shape` property that can either be set on initialization, or at a later point in time. The following creates a multidimensional array with shape `(1, 3, 2, 1)` and repeating value `""`. Ie. a 4-Dimensional array with dimensions `1`, `3`, `2` and `1`, and `1 * 3 * 2 * 1 = 6` elements with value `""`.
 ```swift
 let B = MDArray<String>(shape: [1, 3, 2, 1], repeating: "")
 ```

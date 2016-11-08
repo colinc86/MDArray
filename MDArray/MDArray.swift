@@ -555,6 +555,23 @@ extension MDArray: MutableCollection {
         return swapElements(index)
     }
     
+    /// Transform the values of the receivers storage and return the transformed multidimensional array.
+    public func map(_ transform: (T) throws -> T) rethrows -> MDArray<T> {
+        var transformedStorage = Array<T>()
+        
+        for v in self.storage {
+            do {
+                let tv = try transform(v)
+                transformedStorage.append(tv)
+            }
+            catch {
+                break
+            }
+        }
+        
+        return MDArray<T>(shape: self.shape, storage: transformedStorage)
+    }
+    
     
     
     
