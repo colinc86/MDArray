@@ -52,11 +52,13 @@ public func .* (A: MDArray<Double>, B: MDArray<Double>) -> MDArray<Double> { ret
 
 // MARK: MDArray/MDArray division (element-wise)
 
-public func / (A: MDArray<Int32>, B: MDArray<Int32>) -> MDArray<Int32> { return md_edivi(A, B) }
+infix operator ./
 
-public func / (A: MDArray<Float>, B: MDArray<Float>) -> MDArray<Float> { return md_ediv(A, B) }
+public func ./ (A: MDArray<Int32>, B: MDArray<Int32>) -> MDArray<Int32> { return md_edivi(A, B) }
 
-public func / (A: MDArray<Double>, B: MDArray<Double>) -> MDArray<Double> { return md_edivD(A, B) }
+public func ./ (A: MDArray<Float>, B: MDArray<Float>) -> MDArray<Float> { return md_ediv(A, B) }
+
+public func ./ (A: MDArray<Double>, B: MDArray<Double>) -> MDArray<Double> { return md_edivD(A, B) }
 
 
 // MARK: MDArray/MDArray addition (element-wise)
@@ -590,7 +592,7 @@ public func md_vmul<T>(_ A: MDArray<T>, _ da: Int, _ B: MDArray<T>, _ db: Int) -
     }
     
     if valid {
-        if A.dimension(da) != B.dimension(db) {
+        if A.shape[da] != B.shape[db] {
             valid = false
         }
     }
