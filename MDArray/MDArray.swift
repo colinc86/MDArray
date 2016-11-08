@@ -29,10 +29,10 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
     // MARK: Properties
     
     /// The multidimensional array's storage.
-    internal(set) var storage: Array<T>
+    public internal(set) var storage: Array<T>
     
     /// The shape of the multidimensional array.
-    internal(set) var shape: Array<Int>
+    public internal(set) var shape: Array<Int>
     
     
     
