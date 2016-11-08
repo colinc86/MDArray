@@ -1,4 +1,6 @@
 ## MDMath
+The following outlines the file [`MDMath.swift`](https://github.com/colinc86/MDArray/blob/master/MDArray/MDMath.swift).
+
 `MDMath` uses the `Acclerate` framework which dictates which types `MDMath`'s functions support. Currently `MDMath` supports computations with `Int32`, `Float`, and `Double` storage types.
 
 ### Functions

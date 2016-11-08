@@ -1,4 +1,6 @@
 ## MDArray
+The following outlines the file [`MDArray.swift`](https://github.com/colinc86/MDArray/blob/master/MDArray/MDArray.swift).
+
 ### Creating a MDArray
 The default `MDArray` constructor creates an empty multidimensional array. I.e. a multidimensional array with empty storage and shape.
 ```swift

@@ -1,4 +1,6 @@
 ## MDExtensions
+The following outlines the file [`MDExtensions.swift`](https://github.com/colinc86/MDArray/blob/master/MDArray/MDExtensions.swift).
+
 ### Numeric protocol
 Extension functions in `MDExtensions` require that the `MDArray`'s type conform to the `Numeric` protocol. The `Numeric` protocol,  declared in `MDExtensions.swift`, provides common numeric elements, and allows types such as `Int32`, `Float`, and `Double` to share operator declarations.
 ```swift
