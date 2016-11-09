@@ -23,4 +23,4 @@ There is still work to be done! Please feel free to contribute to any of the fol
 
 - Complex number support (`MDMath` should handle `DSPSplitComplex` and `DSPDoubleSplitComplex` vDSP functions)
 - Row reductions
-- Multidimensional array inverse, cross product, and dot product.
+- Multidimensional array inverse, outter/inner products.
