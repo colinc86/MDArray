@@ -627,8 +627,6 @@ public func md_vmul<T>(_ A: MDArray<T>, _ da: Int, _ B: MDArray<T>, _ db: Int) -
  
  - Remark:
  This function assumes both arrays have the same storage ordering (row-major or column-major).
- 
- See [Multidimensional Matrix Mathematics: Multidimensional Matrix Equality, Addition, Subtraction, and Multiplication, Part 2 of 6](http://www.iaeng.org/publication/WCE2010/WCE2010_pp1829-1833.pdf) for more information.
  */
 public func md_mul(_ A: MDArray<Float>, _ da: Int, _ B: MDArray<Float>, _ db: Int) -> MDArray<Float> {
     var C = MDArray<Float>()
@@ -673,8 +671,6 @@ public func md_mul(_ A: MDArray<Float>, _ da: Int, _ B: MDArray<Float>, _ db: In
  
  - Remark:
  This function assumes both arrays have the same storage ordering (row-major or column-major).
- 
- See [Multidimensional Matrix Mathematics: Multidimensional Matrix Equality, Addition, Subtraction, and Multiplication, Part 2 of 6](http://www.iaeng.org/publication/WCE2010/WCE2010_pp1829-1833.pdf) for more information.
  */
 public func md_mulD(_ A: MDArray<Double>, _ da: Int, _ B: MDArray<Double>, _ db: Int) -> MDArray<Double> {
     var C = MDArray<Double>()
@@ -719,8 +715,6 @@ public func md_mulD(_ A: MDArray<Double>, _ da: Int, _ B: MDArray<Double>, _ db:
  
  - Remark:
  This function assumes both arrays have the same storage ordering (row-major or column-major).
- 
- See [Multidimensional Matrix Mathematics: Multidimensional Matrix Equality, Addition, Subtraction, and Multiplication, Part 2 of 6](http://www.iaeng.org/publication/WCE2010/WCE2010_pp1829-1833.pdf) for more information.
  */
 public func md_muli(_ A: MDArray<Int32>, _ da: Int, _ B: MDArray<Int32>, _ db: Int) -> MDArray<Int32> {
     var C = MDArray<Int32>()
