@@ -219,7 +219,7 @@ public extension MDArray where T: Numeric {
                     var upperBound = [baseDimX - 1, baseDimY - 1]
                     upperBound.append(contentsOf: currentIndex[2 ..< currentIndex.count])
 
-                    let subArray = self.array(withRange: Range<Index>(uncheckedBounds: (lowerBound, upperBound)))
+                    let subArray = self.array(withRange: lowerBound ... upperBound)
                     let subDet = MDArray<T>.determinant2d(subArray)
                     let newIndex = Array<Int>(currentIndex[2 ..< currentIndex.count])
                     det!.setElement(subDet, atIndex: newIndex)

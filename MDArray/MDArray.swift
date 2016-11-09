@@ -198,7 +198,8 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
      */
     public mutating func reshape(shape: Array<Int>, repeating value: T?) {
         let storageLength = productOfElements(shape)
-        
+        //let storageLength = shape.count > 0 ? productOfElements(shape) : 1
+
         if storageLength < self.storage.count {
             self.storage.removeLast(self.storage.count - storageLength)
         }
@@ -469,6 +470,17 @@ extension MDArray: MutableCollection {
     /// Gets or sets a sub-array in the multidimensional array in `range`.
     public subscript(range: Range<Index>) -> MDArray<T> {
         get {
+            return self.array(withRange: range.lowerBound ... self.index(before: range.upperBound))
+        }
+        
+        set {
+            self.setArray(newValue, forRange: range.lowerBound ... self.index(before: range.upperBound))
+        }
+    }
+    
+    /// Gets or sets a sub-array in the multidimensional array in `range`.
+    public subscript(range: ClosedRange<Index>) -> MDArray<T> {
+        get {
             return self.array(withRange: range)
         }
         
@@ -563,6 +575,30 @@ extension MDArray: MutableCollection {
             }
             else {
                 index[j] = startIndex[j]
+            }
+        }
+        
+        return swapElements(index)
+    }
+    
+    /// Gets the index of the receiver before `i`.
+    public func index(before i: Index) -> Index {
+        // Validate index
+        MDArray.checkCondition(self.validate(index: i), "MDInvalidIndexException", "index(before:) Index must be a valid index in the array.")
+        
+        var index = swapElements(i)
+        let startIndex = swapElements(self.startIndex)
+        let endIndex = swapElements(self.endIndex)
+        
+        for j in 0 ..< index.count {
+            if index[j] > startIndex[j] {
+                index[j] -= 1
+                
+                for i in 0 ..< j {
+                    index[i] = endIndex[i]
+                }
+                
+                break
             }
         }
         
@@ -673,7 +709,7 @@ extension MDArray: MutableCollection {
      - Parameter range: The upper and lower bounds of the sub array.
      - Returns: The subarray with `range`.
      */
-    internal func array(withRange range: Range<Index>) -> MDArray<T> {
+    internal func array(withRange range: ClosedRange<Index>) -> MDArray<T> {
         MDArray.checkCondition(self.validate(index: range.lowerBound) && self.validate(index: range.upperBound), "MDInvalidRangeException", "array(withRange:) Range must be a valid range in the array.")
         
         var subShape = Array<Int>() // The shape to use while iterating
@@ -741,7 +777,7 @@ extension MDArray: MutableCollection {
      - Parameter e: The value to set at `index`.
      - Parameter index: The index of the element in the multidimensional array.
      */
-    internal mutating func setArray(_ A: MDArray<T>, forRange range: Range<Index>) {
+    internal mutating func setArray(_ A: MDArray<T>, forRange range: ClosedRange<Index>) {
         MDArray.checkCondition(self.validate(index: range.lowerBound) && self.validate(index: range.upperBound), "MDInvalidRangeException", "setArray(_:forRange:) Range must be a valid range in the array.")
         
         var subShape = Array<Int>() // The shape to use while iterating
