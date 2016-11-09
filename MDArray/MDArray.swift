@@ -21,7 +21,6 @@
 //
 
 import Foundation
-import Accelerate
 
 /// A multidimensional array.
 public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible {
@@ -183,7 +182,7 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
      - Parameter repeating: The value to use if `storage` must grow. Otherwise this value can be nil.
      - Returns: The reshaped multidimensional array.
      */
-    public mutating func reshape(_ shape: Array<Int>, repeating value: T?) {
+    public mutating func reshape(shape: Array<Int>, repeating value: T?) {
         var success = true
         
         // If shape is empty, then this array is a scaler and storage should have a capacity of 1.

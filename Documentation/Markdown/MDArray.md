@@ -1,5 +1,5 @@
 ## MDArray
-The following outlines the file [`MDArray.swift`](https://github.com/colinc86/MDArray/blob/master/MDArray/MDArray.swift).
+The following outlines the `MDArray` type defined in the file [`MDArray.swift`](https://github.com/colinc86/MDArray/blob/master/MDArray/MDArray.swift).
 
 ### Creating a MDArray
 The default `MDArray` constructor creates an empty multidimensional array. I.e. a multidimensional array with empty storage and shape.
@@ -23,8 +23,12 @@ let C = MDArray<String>(shape: [1, 3, 2, 1], storage: ["A", "type", "multidimens
 To get or set an element of a multidimensional array:
 ```swift
 var D = MDArray<Float>(shape: [2, 3, 2], repeating: 0.0)
+
+// Set the element at [1, 1, 0] to 2.0
 D[1, 1, 0] = 2.0
-D[0, 2, 1] = F[1, 1, 0]
+
+// Set the element at [0, 2, 1] to the element at [1, 1, 0]
+D[0, 2, 1] = D[1, 1, 0]
 ```
 If you are unsure if an index is a valid index in the multidimensional array, you can use the `validate(index:)` function before attempting to retrieve an element.
 
@@ -48,10 +52,10 @@ let matrix = D[matrixRange]
 
 ```swift
 // The multidimensional array's storage in row-major order.
-internal(set) var storage: Array<T>
+public internal(set) var storage: Array<T>
     
 // The shape of the multidimensional array.
-internal(set) var shape: Array<Int>
+public internal(set) var shape: Array<Int>
 ```
 
 `MDArray` also defines a number of computed properties to make life easier when working with common types of multidimensional arrays.
@@ -77,17 +81,44 @@ public var isSquare: Bool
 ```
 
 ### Functions
-The following functions are defined by `MDArray`:
+In the case that you need to change a multidimensional array's shape, use the `reshape(shape:repeating:)` function:
 ```swift
-// Reshapes the multidimensional array. If the new shape results in a smaller storage storage size, then the multidimensional array's storage is truncated. Otherwise, the value of `repeating` is used to add any new elements to `storage`.
-public mutating func reshape(_ shape: Array<Int>, repeating value: T?)
+var E = MDArray<Float>(shape: [2, 2, 2], repeating: 0.0)
 
-// Sets the receiver's `shape` to its simplified shape.
-public mutating func simplify()
+// Reshape to a smaller array
+E.reshape(shape: [2, 2], repeating: nil)
 
-// Determines if `index` is valid in the multidimensional array.
-public func validate(index: Array<Int>) -> Bool
+// Reshape to a larger array
+E.reshape(shape: [2, 3, 4, 2], repeating: 0.0)
+```
+In the example above, we can pass `nil` for the `repeating` parameter in the first call to `reshape`, because `E` will have less (or equal) elements than before the reshaping process (since `2 * 2 <= 2 * 2 * 2`). In the second call to `reshape`, we pass the value of `0.0` to `reshape` via `repeating` to create the new elements added to `E` (since `2 * 2 <= 2 * 3 * 4 * 2`).
 
+Suppose a multidimensional array has the shape `[1, 1, 4, 1, 5, 1]`. We can simplify this shape by calling `simplify()` on the array. `simplify()` removes leading *pairs* of `1`s, and *all* trailing `1`s from the array's `shape`.
+```swift
+var F = MDArray<Float>(shape: [1, 1, 4, 1, 5, 1], repeating: 0.0)
+print(F.shape) // prints "[1, 1, 4, 1, 5, 1]"
+
+F.simplify()
+print(F.shape) // prints "[4, 1, 5]"
+```
+
+You may need to determine if an index is valid in a multidimensional array. That is, the index correctly locates a single element in the multidimensional array.
+```swift
+let G = MDArray<Float>(shape: [2, 3, 2, 2], repeating: 0.0)
+
+let validIndex = [1, 2, 0, 1]
+if G.validate(index: validIndex) {
+    // Do something with index
+}
+
+let invalidIndex = [2, 2, 0, 1]
+if G.validate(index: invalidIndex) {
+    // Will not get called
+}
+```
+
+Other functions defined in `MDArray`:
+```swift
 // Returns a transposed multidimensional array by transposing its `dx`th and `dy`th dimensions.
 public func transpose(_ dx: Int, _ dy: Int) -> MDArray<T>
 

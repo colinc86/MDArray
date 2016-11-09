@@ -638,7 +638,7 @@ public func md_mul(_ A: MDArray<Float>, _ da: Int, _ B: MDArray<Float>, _ db: In
         cShape[da] = B.shape[db]
         cShape[db] = A.shape[da]
         
-        C.reshape(cShape, repeating: A.storage[0])
+        C.reshape(shape: cShape, repeating: A.storage[0])
         for i in 0 ..< C.storage.count {
             let index = C.index(forStorageIndex: i)
             
@@ -684,7 +684,7 @@ public func md_mulD(_ A: MDArray<Double>, _ da: Int, _ B: MDArray<Double>, _ db:
         cShape[da] = B.shape[db]
         cShape[db] = A.shape[da]
         
-        C.reshape(cShape, repeating: A.storage[0])
+        C.reshape(shape: cShape, repeating: A.storage[0])
         for i in 0 ..< C.storage.count {
             let index = C.index(forStorageIndex: i)
             
@@ -730,7 +730,7 @@ public func md_muli(_ A: MDArray<Int32>, _ da: Int, _ B: MDArray<Int32>, _ db: I
         cShape[da] = B.shape[db]
         cShape[db] = A.shape[da]
         
-        C.reshape(cShape, repeating: A.storage[0])
+        C.reshape(shape: cShape, repeating: A.storage[0])
         for i in 0 ..< C.storage.count {
             let index = C.index(forStorageIndex: i)
             
