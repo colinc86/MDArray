@@ -125,6 +125,19 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
     
     
     
+    // MARK: Static functions
+    
+    internal static func checkCondition(_ condition: Bool, _ name: String, _ reason: String) {
+        if !condition {
+            let exName = NSExceptionName(name)
+            let ex = NSException(name: exName, reason: reason, userInfo: nil)
+            ex.raise()
+        }
+    }
+    
+    
+    
+    
     // MARK: Initializers
     
     /**
@@ -150,7 +163,8 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
         self.init()
         let expectedStorageCount = productOfElements(shape)
         
-        assert(expectedStorageCount <= storage.count, String(format:"Expected %d elements but storage only has %d.", expectedStorageCount, storage.count))
+        // Storage should have the correct number of elements
+        MDArray.checkCondition(expectedStorageCount <= storage.count, "MDInvalidStorageLengthException", String(format: "init(shape:storage:) Expected %d elements but storage only has %d.", expectedStorageCount, storage.count))
         
         self.storage.append(contentsOf: storage[0 ..< expectedStorageCount])
         self.shape = shape
@@ -183,27 +197,21 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
      - Returns: The reshaped multidimensional array.
      */
     public mutating func reshape(shape: Array<Int>, repeating value: T?) {
-        var success = true
-        
-        // If shape is empty, then this array is a scaler and storage should have a capacity of 1.
-        let storageLength = shape.count > 0 ? productOfElements(shape) : 1
+        let storageLength = productOfElements(shape)
         
         if storageLength < self.storage.count {
             self.storage.removeLast(self.storage.count - storageLength)
         }
         else if storageLength > self.storage.count {
+            // Repeating value should not be nil
+            MDArray.checkCondition(value != nil, "MDNeedsValueException", "reshape(shape:repeating:) The array has more elements than before the reshaping process. Repeating value should not be nil.")
+            
             if let v = value {
                 self.storage.append(contentsOf: Array<T>(repeating: v, count: storageLength - self.storage.count))
             }
-            else {
-                // The repeating value is required, but is nil... uh oh.
-                success = false
-            }
         }
         
-        if success {
-            self.shape = shape
-        }
+        self.shape = shape
     }
     
     /**
@@ -251,6 +259,10 @@ public struct MDArray<T>: CustomStringConvertible, CustomDebugStringConvertible 
      - Returns: The transposed multidimensional array.
      */
     public func transpose(_ dx: Int, _ dy: Int) -> MDArray<T> {
+        // dx and dy should be valid dimension indices
+        MDArray.checkCondition(dx < self.rank, "MDInvalidDimensionException", "transpose(_:_:) \(dx) (dx) should be less than the rank (\(self.rank)) of the array.")
+        MDArray.checkCondition(dy < self.rank, "MDInvalidDimensionException", "transpose(_:_:) \(dy) (dy) should be less than the rank (\(self.rank)) of the array.")
+        
         // Get the modified shape
         var modifiedShape = Array<Int>(self.shape)
         let xDim = modifiedShape[dx]
@@ -537,6 +549,9 @@ extension MDArray: MutableCollection {
     
     /// Gets the next index of the receiver after `i`.
     public func index(after i: Index) -> Index {
+        // Validate index
+        MDArray.checkCondition(self.validate(index: i), "MDInvalidIndexException", "index(after:) Index must be a valid index in the array.")
+        
         var index = swapElements(i)
         let startIndex = swapElements(self.startIndex)
         let endIndex = swapElements(self.endIndex)
@@ -585,6 +600,8 @@ extension MDArray: MutableCollection {
      - Returns: The index of the element in the multidimensional array's storage.
      */
     internal func storageIndex(forIndex index: Index) -> Int {
+        MDArray.checkCondition(self.validate(index: index), "MDInvalidIndexException", "storageIndex(forIndex:) Index must be a valid index in the array.")
+        
         var components = Array<Int>()
         
         for i in 0 ..< index.count {
@@ -604,6 +621,8 @@ extension MDArray: MutableCollection {
      - Returns: The index of the array's component.
      */
     internal func index(forStorageIndex storageIndex: Int) -> Index {
+        MDArray.checkCondition(storageIndex < self.storage.count, "MDInvalidIndexException", "index(forStorageIndex:) Index must be a valid index in storage.")
+        
         var index = Array<Int>()
         var storageCount = productOfElements(self.shape)
         var currentIndex = storageIndex
@@ -629,6 +648,8 @@ extension MDArray: MutableCollection {
      - Returns: The element at `index`.
      */
     internal func element(atIndex index: Index) -> T {
+        MDArray.checkCondition(self.validate(index: index), "MDInvalidIndexException", "element(atIndex:) Index must be a valid index in the array.")
+        
         let storageIndex = self.storageIndex(forIndex: index)
         return self.storage[storageIndex]
     }
@@ -640,6 +661,8 @@ extension MDArray: MutableCollection {
      - Parameter index: The index of the element in the multidimensional array.
      */
     internal mutating func setElement(_ e: T, atIndex index: Index) {
+        MDArray.checkCondition(self.validate(index: index), "MDInvalidIndexException", "setElement(_:atIndex:) Index must be a valid index in the array.")
+        
         let storageIndex = self.storageIndex(forIndex: index)
         self.storage[storageIndex] = e
     }
@@ -651,6 +674,8 @@ extension MDArray: MutableCollection {
      - Returns: The subarray with `range`.
      */
     internal func array(withRange range: Range<Index>) -> MDArray<T> {
+        MDArray.checkCondition(self.validate(index: range.lowerBound) && self.validate(index: range.upperBound), "MDInvalidRangeException", "array(withRange:) Range must be a valid range in the array.")
+        
         var subShape = Array<Int>() // The shape to use while iterating
         var newShape = Array<Int>() // The shape of the new array
         
@@ -717,6 +742,8 @@ extension MDArray: MutableCollection {
      - Parameter index: The index of the element in the multidimensional array.
      */
     internal mutating func setArray(_ A: MDArray<T>, forRange range: Range<Index>) {
+        MDArray.checkCondition(self.validate(index: range.lowerBound) && self.validate(index: range.upperBound), "MDInvalidRangeException", "setArray(_:forRange:) Range must be a valid range in the array.")
+        
         var subShape = Array<Int>() // The shape to use while iterating
         var newShape = Array<Int>() // The shape of the new array
         

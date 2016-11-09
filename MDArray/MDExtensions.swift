@@ -104,6 +104,9 @@ public extension MDArray where T: Numeric {
      - Returns: A multidimensional array with `shape` who acts as an identity multidimensional array over the `dx` and `dy` dimensions.
      */
     public static func identity(shape: Array<Int>, dx: Int, dy: Int) -> MDArray<T>? {
+        MDArray.checkCondition(dx < shape.count, "MDInvalidDimensionException", "identity(shape:dx:dy:) \(dx) (dx) should be less than the rank (\(shape.count)) of the array.")
+        MDArray.checkCondition(dy < shape.count, "MDInvalidDimensionException", "identity(shape:dx:dy:) \(dy) (dy) should be less than the rank (\(shape.count)) of the array.")
+        
         var I: MDArray<T>? = nil
         
         if dx < shape.count && dx < shape.count {
@@ -250,6 +253,9 @@ public extension MDArray where T: Numeric {
      - Returns: A boolean indicating wether or not the multidimensional matrix is symmetric.
      */
     public func symmetric(_ dx: Int, _ dy: Int) -> Bool {
+        MDArray.checkCondition(dx < self.rank, "MDInvalidDimensionException", "symmetric(_:_:) \(dx) (dx) should be less than the rank (\(self.rank)) of the array.")
+        MDArray.checkCondition(dy < self.rank, "MDInvalidDimensionException", "symmetric(_:_:) \(dy) (dy) should be less than the rank (\(self.rank)) of the array.")
+        
         var isSymmetric = true
         
         for i in 0 ..< self.storage.count {
@@ -285,6 +291,9 @@ public extension MDArray where T: Numeric {
      - Returns: A boolean indicating wether or not the multidimensional matrix is antisymmetric.
      */
     public func antisymmetric(_ dx: Int, _ dy: Int) -> Bool {
+        MDArray.checkCondition(dx < self.rank, "MDInvalidDimensionException", "antisymmetric(_:_:) \(dx) (dx) should be less than the rank (\(self.rank)) of the array.")
+        MDArray.checkCondition(dy < self.rank, "MDInvalidDimensionException", "antisymmetric(_:_:) \(dy) (dy) should be less than the rank (\(self.rank)) of the array.")
+        
         var isAntisymmetric = true
         
         for i in 0 ..< self.storage.count {
