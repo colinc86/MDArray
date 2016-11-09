@@ -87,7 +87,12 @@ public extension MDArray where T: Numeric {
      - Returns: A multidimensional array with `shape` whos elements are each set to the associated type's `additiveIdentity`.
      */
     public static func null(shape: Array<Int>) -> MDArray<T> {
-        return MDArray<T>(shape: shape, storage: Array<T>(repeating: T.additiveIdentity as! T, count: productOfElements(shape)))
+        var count: Int = 1
+        for s in shape {
+            count *= s
+        }
+        
+        return MDArray<T>(shape: shape, storage: Array<T>(repeating: T.additiveIdentity as! T, count: count))
     }
     
     /**

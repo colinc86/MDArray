@@ -887,7 +887,7 @@ extension Array: Comparable {
 // MARK: Helper functions
 
 /// Finds the product of the elements in `a` with the corresponding elements of `b`.
-public func productOfElements(_ a: Array<Int>, _ b: Array<Int>) -> Array<Int> {
+fileprivate func productOfElements(_ a: Array<Int>, _ b: Array<Int>) -> Array<Int> {
     var p = Array<Int>()
     for (x, y) in zip(a, b) {
         p.append(x * y)
@@ -897,7 +897,7 @@ public func productOfElements(_ a: Array<Int>, _ b: Array<Int>) -> Array<Int> {
 }
 
 /// Finds the product of the elements of `a`.
-public func productOfElements(_ a: Array<Int>) -> Int {
+fileprivate func productOfElements(_ a: Array<Int>) -> Int {
     var p = Int(1)
     for e in a {
         p *= e
@@ -907,7 +907,7 @@ public func productOfElements(_ a: Array<Int>) -> Int {
 }
 
 /// Finds the sum of the elements of `a`.
-public func sumOfElements(_ a: Array<Int>) -> Int {
+fileprivate func sumOfElements(_ a: Array<Int>) -> Int {
     var s = Int(0)
     for e in a {
         s += e
@@ -917,7 +917,7 @@ public func sumOfElements(_ a: Array<Int>) -> Int {
 }
 
 /// Swaps consecutive even/odd indexed elements. We'll use this function to convert indices to/from column-major form to make iterating easier.
-public func swapElements<T>(_ A: Array<T>) -> Array<T> {
+fileprivate func swapElements<T>(_ A: Array<T>) -> Array<T> {
     var s = Array(A)
     for i in stride(from: 0, to: A.count, by: 2) {
         if i + 1 < A.count {
